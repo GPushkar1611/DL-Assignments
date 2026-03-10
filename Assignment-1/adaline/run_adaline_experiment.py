@@ -69,7 +69,7 @@ plt.close()
 # ----------------------------
 model = Adaline(learning_rate=0.01, max_iterations=1000)
 
-train_mse, val_mse, train_acc, val_acc = model.fit(
+train_mse, val_mse = model.fit(
     X_train,
     y_train,
     X_val,
@@ -86,7 +86,7 @@ plt.plot(val_mse, label="Validation MSE")
 
 plt.xlabel("Epoch")
 plt.ylabel("Mean Squared Error")
-plt.title("MSE vs Epoch")
+plt.title("Training and Validation MSE vs Epoch")
 
 plt.legend()
 
@@ -94,25 +94,7 @@ plt.savefig(f"{PLOT_DIR}/mse_vs_epoch.png")
 plt.close()
 
 # ----------------------------
-# Accuracy vs Epoch
-# ----------------------------
-plt.figure()
-
-plt.plot(train_acc, label="Train Accuracy (±5 min)")
-plt.plot(val_acc, label="Validation Accuracy (±5 min)")
-
-plt.xlabel("Epoch")
-plt.ylabel("Accuracy")
-
-plt.title("Accuracy vs Epoch")
-
-plt.legend()
-
-plt.savefig(f"{PLOT_DIR}/accuracy_vs_epoch.png")
-plt.close()
-
-# ----------------------------
-# Decision Boundary in PCA space
+# Decision Function in PCA space
 # ----------------------------
 xx, yy = np.meshgrid(
     np.linspace(X_train_pca[:,0].min(), X_train_pca[:,0].max(), 100),
@@ -151,8 +133,11 @@ learning_rates = [0.01, 0.1, 1.0, 10.0]
 plt.figure()
 
 for lr in learning_rates:
+
     model = Adaline(learning_rate=lr, max_iterations=300)
+
     train_mse = model.fit(X_train, y_train)
+
     plt.plot(np.clip(train_mse, 1e-8, None), label=f"lr={lr}")
 
 plt.xlabel("Epoch")
@@ -166,11 +151,11 @@ plt.savefig(f"{PLOT_DIR}/learning_rate_experiment.png")
 plt.close()
 
 # ----------------------------
-# Training size vs accuracy
+# Training size vs Final Loss
 # ----------------------------
 fractions = np.arange(0.1, 1.1, 0.1)
 
-final_accuracy = []
+final_losses = []
 
 for frac in fractions:
 
@@ -185,21 +170,21 @@ for frac in fractions:
 
     model.fit(X_sub, y_sub)
 
-    y_pred = model.predict(X_val)
+    val_loss = model.score(X_val, y_val)
 
-    acc = np.mean(np.abs(y_pred - y_val) <= 5)
-
-    final_accuracy.append(acc)
+    final_losses.append(val_loss)
 
 plt.figure()
 
-plt.plot(fractions * 100, final_accuracy, marker="o")
+plt.plot(fractions * 100, final_losses, marker="o")
 
 plt.xlabel("Training Set Size (%)")
-plt.ylabel("Validation Accuracy (±5 min)")
-plt.title("Training Set Size vs Accuracy")
+plt.ylabel("Validation MSE")
+plt.title("Training Set Size vs Final Validation Loss")
 
-plt.savefig(f"{PLOT_DIR}/training_size_vs_accuracy.png")
+plt.grid(True)
+
+plt.savefig(f"{PLOT_DIR}/training_size_vs_loss.png")
 plt.close()
 
 print("All ADALINE experiments completed.")

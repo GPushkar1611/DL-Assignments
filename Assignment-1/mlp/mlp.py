@@ -67,7 +67,6 @@ class MLP:
         grads_W = {}
         grads_b = {}
 
-        # ✅ CORRECT MSE GRADIENT
         dA = 2 * (self.A[self.L] - y)
 
         for l in reversed(range(1, self.L + 1)):
