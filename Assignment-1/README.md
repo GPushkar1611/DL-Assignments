@@ -1,5 +1,7 @@
 # Deep Learning 2026 — Assignment 1
 
+**Submitted by:** Pushkar Gudla - AI24BTECH11012
+
 ## Repository Structure
 ```
 ASSIGNMENT-1/
